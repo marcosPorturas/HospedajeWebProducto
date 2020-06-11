@@ -1,0 +1,11 @@
+server:  port: 8010
+
+spring:
+  data:
+    mongodb:
+      database: dbhospedajeweb
+      port: 27017
+      host: localhost
+      username: marco
+      password: marco
+metodo:  listarsocios: listarSocios  obtenerSocio: obtenerSocio  agregarSocio: agregarSocio    socio:  codigo:   idf0: 0   idf1: 1   idt3: -3   mensaje:   idf0: Operacion Exitosa   idf1: No se obtuvieron resultados en la consulta.      idt3: Error inesperado en el servicio.
