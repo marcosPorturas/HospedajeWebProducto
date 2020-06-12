@@ -1,5 +1,7 @@
 package com.hospedaje.web.producto.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +33,12 @@ public class ProductoController {
 	@GetMapping("/listar")
 	public Flux<ProductoResponse> listarProductos(@RequestHeader HttpHeaders headers){
 		return productoService.listarProductos(headers);
+	}
+	
+	@GetMapping("/listar/{idsProducto}")
+	public Flux<ProductoResponse> listarProductosXIds(@RequestHeader HttpHeaders headers,
+			@PathVariable("idsProducto")List<Integer> idProductos){
+		return productoService.listarProductosXIds(idProductos);
 	}
 	
 	@GetMapping("/{idProducto}")

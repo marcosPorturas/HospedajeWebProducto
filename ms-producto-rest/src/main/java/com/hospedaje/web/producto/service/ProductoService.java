@@ -1,5 +1,7 @@
 package com.hospedaje.web.producto.service;
 
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
@@ -11,7 +13,8 @@ import reactor.core.publisher.Mono;
 public interface ProductoService {
 
 	public Flux<ProductoResponse> listarProductos(HttpHeaders headers);
-	public Mono<ProductoResponse> obtenerProducto(Integer idSocio);
+	public Flux<ProductoResponse> listarProductosXIds(List<Integer> idProductos);
+	public Mono<ProductoResponse> obtenerProducto(Integer idProducto);
 	public Mono<ProductoResponse> agregarProducto(ProductoRequest socioRequest,HttpHeaders headers);
 	
 }

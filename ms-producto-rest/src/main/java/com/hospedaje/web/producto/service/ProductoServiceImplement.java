@@ -1,6 +1,7 @@
 package com.hospedaje.web.producto.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,8 @@ public class ProductoServiceImplement implements ProductoService{
 	}
 
 	@Override
-	public Mono<ProductoResponse> obtenerProducto(Integer idSocio) {
-		return productoRepository.findById(idSocio)
+	public Mono<ProductoResponse> obtenerProducto(Integer idProducto) {
+		return productoRepository.findById(idProducto)
 				.map(this::productoResponseDto);
 	}
 
@@ -50,6 +51,13 @@ public class ProductoServiceImplement implements ProductoService{
 		return productoRepository.save(getProductoEntity(socioRequest))
 				.map(this::productoResponseDto);
 	}
+	
+	@Override
+	public Flux<ProductoResponse> listarProductosXIds(List<Integer> idProductos) {
+		return productoRepository.findAllById(idProductos)
+				.map(this::productoResponseDto);
+	}
+	
 	
 	private ProductoResponse productoResponseDto(Producto producto) {
 		return ProductoResponse.builder()
@@ -71,6 +79,6 @@ public class ProductoServiceImplement implements ProductoService{
 				.enabled(true)
 				.precioUnitario(productoRequest.getPrecioUnitario()).build();
 	}
-	
+
 }
 ;
