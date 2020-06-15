@@ -1,7 +1,9 @@
 package com.hospedaje.web.producto.service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,9 @@ public class ProductoServiceImplement implements ProductoService{
 	}
 	
 	@Override
-	public Flux<ProductoResponse> listarProductosXIds(List<Integer> idProductos) {
-		return productoRepository.findAllById(idProductos)
+	public Flux<ProductoResponse> listarProductosXIds(int[] idProductos) {
+		List<Integer> lstIdProductos = Arrays.stream(idProductos).boxed().collect(Collectors.toList());
+		return productoRepository.findAllById(lstIdProductos)
 				.map(this::productoResponseDto);
 	}
 	

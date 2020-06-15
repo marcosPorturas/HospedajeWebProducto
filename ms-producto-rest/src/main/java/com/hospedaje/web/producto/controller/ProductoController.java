@@ -1,7 +1,5 @@
 package com.hospedaje.web.producto.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
-import com.hospedaje.web.producto.entity.Producto;
 import com.hospedaje.web.producto.service.ProductoService;
 
 import reactor.core.publisher.Flux;
@@ -37,7 +34,7 @@ public class ProductoController {
 	
 	@GetMapping("/listar/{idsProducto}")
 	public Flux<ProductoResponse> listarProductosXIds(@RequestHeader HttpHeaders headers,
-			@PathVariable("idsProducto")List<Integer> idProductos){
+			@PathVariable("idsProducto")int[] idProductos){
 		return productoService.listarProductosXIds(idProductos);
 	}
 	
