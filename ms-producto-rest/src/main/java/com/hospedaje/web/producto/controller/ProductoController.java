@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
@@ -38,9 +39,11 @@ public class ProductoController {
 		return productoService.listarProductosXIds(idProductos);
 	}
 	
-	@GetMapping("/{idProducto}")
-	public Mono<ProductoResponse> obtenerProducto(@PathVariable("idProducto")Integer idSocio){
-		return productoService.obtenerProducto(idSocio);
+	@GetMapping
+	public Mono<ProductoResponse> obtenerProducto(@RequestParam("idproducto")Integer idProducto,
+			@RequestParam("cantidad")Integer cantidad){
+		if(cantidad==null)cantidad=0;
+		return productoService.obtenerProducto(idProducto,cantidad);
 	}
 	
 	@PostMapping("/agregar")

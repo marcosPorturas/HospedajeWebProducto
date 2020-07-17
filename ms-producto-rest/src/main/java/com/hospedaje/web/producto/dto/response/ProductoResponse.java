@@ -18,6 +18,8 @@ public class ProductoResponse implements Serializable{
 	private Double precioUnitario;
 	private String creationDate;
 	private boolean enabled;
+	private boolean statusStock;
+	
 	
 	public ProductoResponse () {
 		super();
@@ -69,6 +71,14 @@ public class ProductoResponse implements Serializable{
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean isStatusStock() {
+		return statusStock;
+	}
+
+	public void setStatusStock(boolean statusStock) {
+		this.statusStock = statusStock;
 	}
 	
 	

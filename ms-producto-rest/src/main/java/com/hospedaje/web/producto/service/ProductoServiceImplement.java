@@ -43,9 +43,17 @@ public class ProductoServiceImplement implements ProductoService{
 	}
 
 	@Override
-	public Mono<ProductoResponse> obtenerProducto(Integer idProducto) {
+	public Mono<ProductoResponse> obtenerProducto(Integer idProducto,Integer cantidad) {
 		return productoRepository.findById(idProducto)
-				.map(this::productoResponseDto);
+				.map(this::productoResponseDto)
+				.map(producto->{
+					if(producto.getStock()>=cantidad){
+						producto.setStatusStock(true);
+					}else {
+						producto.setStatusStock(false);
+					}
+					return producto;
+				});
 	}
 
 	@Override
@@ -69,8 +77,8 @@ public class ProductoServiceImplement implements ProductoService{
 				.stock(producto.getStock())
 				.precioUnitario(producto.getPrecioUnitario())
 				.creationDate(Utilitario.convertirFechaddMMYYYY(producto.getCreationDate()))
-				.enabled(producto.isEnabled()).build();
-				
+				.enabled(producto.isEnabled())
+				.statusStock(true).build();			
 	}
 	
 	private Producto getProductoEntity(ProductoRequest productoRequest) {

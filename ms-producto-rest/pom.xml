@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hospedaje.web.producto</groupId>
-	<artifactId>hospedajewebsocio</artifactId>
+	<artifactId>ms-producto-rest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ms-socio-rest</name>
 	<description>microservicio para administracion de socios</description>

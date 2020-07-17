@@ -14,7 +14,7 @@ public interface ProductoService {
 
 	public Flux<ProductoResponse> listarProductos(HttpHeaders headers);
 	public Flux<ProductoResponse> listarProductosXIds(int[] idProductos);
-	public Mono<ProductoResponse> obtenerProducto(Integer idProducto);
+	public Mono<ProductoResponse> obtenerProducto(Integer idProducto,Integer cantidad);
 	public Mono<ProductoResponse> agregarProducto(ProductoRequest socioRequest,HttpHeaders headers);
 	
 }
