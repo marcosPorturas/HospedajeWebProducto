@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 
+import com.hospedaje.web.producto.dto.request.ProductoConsumoRequest;
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
 
@@ -16,5 +17,6 @@ public interface ProductoService {
 	public Flux<ProductoResponse> listarProductosXIds(int[] idProductos);
 	public Mono<ProductoResponse> obtenerProducto(Integer idProducto,Integer cantidad);
 	public Mono<ProductoResponse> agregarProducto(ProductoRequest socioRequest,HttpHeaders headers);
+	public Flux<ProductoResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest);
 	
 }

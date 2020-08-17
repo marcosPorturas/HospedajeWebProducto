@@ -1,5 +1,6 @@
 package com.hospedaje.web.producto.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -10,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 import com.hospedaje.web.producto.config.ApplicationProperties;
+import com.hospedaje.web.producto.dto.request.ProductoConsumoRequest;
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
 import com.hospedaje.web.producto.entity.Producto;
@@ -45,15 +48,7 @@ public class ProductoServiceImplement implements ProductoService{
 	@Override
 	public Mono<ProductoResponse> obtenerProducto(Integer idProducto,Integer cantidad) {
 		return productoRepository.findById(idProducto)
-				.map(this::productoResponseDto)
-				.map(producto->{
-					if(producto.getStock()>=cantidad){
-						producto.setStatusStock(true);
-					}else {
-						producto.setStatusStock(false);
-					}
-					return producto;
-				});
+				.map(this::productoResponseDto);
 	}
 
 	@Override
@@ -69,6 +64,22 @@ public class ProductoServiceImplement implements ProductoService{
 				.map(this::productoResponseDto);
 	}
 	
+	@Override
+	public Flux<ProductoResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest) {
+		
+		List<Integer> lstIdProductos = new ArrayList<>();
+		productoConsumoRequest.forEach(request->
+			lstIdProductos.add(request.getIdProducto())
+		);
+		
+		return Flux.zip(
+				productoRepository.findAllById(lstIdProductos),
+				Flux.fromIterable(productoConsumoRequest))
+				.filter(tupla->tupla.getT1().getStock()<tupla.getT2().getCantidad())
+				.map(tupla->tupla.getT1())
+				.map(this::productoResponseDto);
+				
+	}
 	
 	private ProductoResponse productoResponseDto(Producto producto) {
 		return ProductoResponse.builder()
@@ -77,8 +88,7 @@ public class ProductoServiceImplement implements ProductoService{
 				.stock(producto.getStock())
 				.precioUnitario(producto.getPrecioUnitario())
 				.creationDate(Utilitario.convertirFechaddMMYYYY(producto.getCreationDate()))
-				.enabled(producto.isEnabled())
-				.statusStock(true).build();			
+				.enabled(producto.isEnabled()).build();			
 	}
 	
 	private Producto getProductoEntity(ProductoRequest productoRequest) {
@@ -90,6 +100,8 @@ public class ProductoServiceImplement implements ProductoService{
 				.enabled(true)
 				.precioUnitario(productoRequest.getPrecioUnitario()).build();
 	}
+
+	
 
 }
 ;

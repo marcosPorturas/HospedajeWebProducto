@@ -12,5 +12,6 @@ import reactor.core.publisher.Mono;
 public interface ProductoRepository extends ReactiveMongoRepository<Producto,Integer> {
 	
 	Mono<Producto> findByIdProducto(Integer idProducto);
+	
 
 }

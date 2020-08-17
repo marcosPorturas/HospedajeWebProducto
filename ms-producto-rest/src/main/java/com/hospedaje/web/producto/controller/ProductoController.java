@@ -1,5 +1,7 @@
 package com.hospedaje.web.producto.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hospedaje.web.producto.dto.request.ProductoConsumoRequest;
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
 import com.hospedaje.web.producto.service.ProductoService;
@@ -33,12 +36,6 @@ public class ProductoController {
 		return productoService.listarProductos(headers);
 	}
 	
-	@GetMapping("/listar/{idsProducto}")
-	public Flux<ProductoResponse> listarProductosXIds(@RequestHeader HttpHeaders headers,
-			@PathVariable("idsProducto")int[] idProductos){
-		return productoService.listarProductosXIds(idProductos);
-	}
-	
 	@GetMapping
 	public Mono<ProductoResponse> obtenerProducto(@RequestParam("idproducto")Integer idProducto,
 			@RequestParam("cantidad")Integer cantidad){
@@ -56,5 +53,8 @@ public class ProductoController {
 		return productoService.agregarProducto(productoRequest, headers);
 	}
 	
-	
+	@PostMapping("/agotado")
+	public Flux<ProductoResponse> validarStock(@RequestBody List<ProductoConsumoRequest> lstProductoConsumo){
+		return productoService.listarProductosAgotados(lstProductoConsumo);
+	}
 }
