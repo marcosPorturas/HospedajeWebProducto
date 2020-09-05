@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hospedaje.web.producto.dto.request.ProductoConsumoRequest;
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
+import com.hospedaje.web.producto.dto.response.ValidarStockResponse;
 import com.hospedaje.web.producto.service.ProductoService;
 
 import reactor.core.publisher.Flux;
@@ -54,7 +55,7 @@ public class ProductoController {
 	}
 	
 	@PostMapping("/agotado")
-	public Flux<ProductoResponse> validarStock(@RequestBody List<ProductoConsumoRequest> lstProductoConsumo){
+	public Mono<ValidarStockResponse> validarStock(@RequestBody List<ProductoConsumoRequest> lstProductoConsumo){
 		return productoService.listarProductosAgotados(lstProductoConsumo);
 	}
 }

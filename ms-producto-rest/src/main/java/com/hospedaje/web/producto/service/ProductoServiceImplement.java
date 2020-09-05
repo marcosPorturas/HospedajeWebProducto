@@ -18,6 +18,8 @@ import com.hospedaje.web.producto.config.ApplicationProperties;
 import com.hospedaje.web.producto.dto.request.ProductoConsumoRequest;
 import com.hospedaje.web.producto.dto.request.ProductoRequest;
 import com.hospedaje.web.producto.dto.response.ProductoResponse;
+import com.hospedaje.web.producto.dto.response.ProductoStock;
+import com.hospedaje.web.producto.dto.response.ValidarStockResponse;
 import com.hospedaje.web.producto.entity.Producto;
 import com.hospedaje.web.producto.repository.ProductoRepository;
 import com.hospedaje.web.producto.util.Utilitario;
@@ -65,7 +67,10 @@ public class ProductoServiceImplement implements ProductoService{
 	}
 	
 	@Override
-	public Flux<ProductoResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest) {
+	public Mono<ValidarStockResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest) {
+		
+		List<ProductoStock> almacen = new ArrayList<>();
+		List<ProductoStock> agotado = new ArrayList<>();
 		
 		List<Integer> lstIdProductos = new ArrayList<>();
 		productoConsumoRequest.forEach(request->
@@ -75,10 +80,17 @@ public class ProductoServiceImplement implements ProductoService{
 		return Flux.zip(
 				productoRepository.findAllById(lstIdProductos),
 				Flux.fromIterable(productoConsumoRequest))
-				.filter(tupla->tupla.getT1().getStock()<tupla.getT2().getCantidad())
-				.map(tupla->tupla.getT1())
-				.map(this::productoResponseDto);
+				.map(tupla->{
+					if(tupla.getT1().getStock()<tupla.getT2().getCantidad()) {
+						agotado.add(setProductoStock(tupla.getT1(),tupla.getT2()));
+					}else {
+						almacen.add(setProductoStock(tupla.getT1(),tupla.getT2()));
+					}
+					return ValidarStockResponse.builder().agotado(agotado).almacen(almacen).build();
+				}).single();
 				
+				
+		
 	}
 	
 	private ProductoResponse productoResponseDto(Producto producto) {
@@ -101,7 +113,13 @@ public class ProductoServiceImplement implements ProductoService{
 				.precioUnitario(productoRequest.getPrecioUnitario()).build();
 	}
 
-	
-
+	private ProductoStock setProductoStock(Producto producto,ProductoConsumoRequest productoConsumoRequest) {
+		return ProductoStock.builder()
+				.idProducto(producto.getIdProducto())
+				.detalle(producto.getDetalle())
+				.cantidad(productoConsumoRequest.getCantidad())
+				.precioUnitario(producto.getPrecioUnitario())
+				.subTotal(producto.getPrecioUnitario()*productoConsumoRequest.getCantidad())
+				.build();
+	}
 }
-;
