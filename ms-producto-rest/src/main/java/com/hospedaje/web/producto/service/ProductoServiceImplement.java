@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -23,11 +24,14 @@ import com.hospedaje.web.producto.dto.response.ValidarStockResponse;
 import com.hospedaje.web.producto.entity.Producto;
 import com.hospedaje.web.producto.repository.ProductoRepository;
 import com.hospedaje.web.producto.util.Utilitario;
+import com.mongodb.async.client.Observable;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 public class ProductoServiceImplement implements ProductoService{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductoServiceImplement.class);
@@ -69,27 +73,35 @@ public class ProductoServiceImplement implements ProductoService{
 	@Override
 	public Mono<ValidarStockResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest) {
 		
-		List<ProductoStock> almacen = new ArrayList<>();
-		List<ProductoStock> agotado = new ArrayList<>();
 		
-		List<Integer> lstIdProductos = new ArrayList<>();
-		productoConsumoRequest.forEach(request->
-			lstIdProductos.add(request.getIdProducto())
-		);
+		List<Integer> lstIdProductos = productoConsumoRequest.stream()
+				.map(request->request.getIdProducto())
+				.collect(Collectors.toList());
 		
-		return Flux.zip(
-				productoRepository.findAllById(lstIdProductos),
+		Flux<Producto> lstProductoEntity = productoRepository.findAllById(lstIdProductos);
+		
+		
+		Mono<List<ProductoStock>> almacen = Flux.zip(
+				lstProductoEntity,
 				Flux.fromIterable(productoConsumoRequest))
-				.map(tupla->{
-					if(tupla.getT1().getStock()<tupla.getT2().getCantidad()) {
-						agotado.add(setProductoStock(tupla.getT1(),tupla.getT2()));
-					}else {
-						almacen.add(setProductoStock(tupla.getT1(),tupla.getT2()));
-					}
-					return ValidarStockResponse.builder().agotado(agotado).almacen(almacen).build();
-				}).single();
+				.filter(tupla->tupla.getT1().getStock()>=tupla.getT2().getCantidad())
+				.map(tupla->setProductoStock(tupla.getT1(), tupla.getT2()))
+				.collectList();
 				
+		Mono<List<ProductoStock>> agotado = Flux.zip(
+				lstProductoEntity,
+				Flux.fromIterable(productoConsumoRequest))
+				.filter(tupla->tupla.getT1().getStock()<tupla.getT2().getCantidad())
+				.map(tupla->setProductoStock(tupla.getT1(), tupla.getT2()))
+				.collectList();
 				
+		
+		return Mono.zip(almacen,agotado).map(tupla2->
+			ValidarStockResponse.builder()
+			.almacen(tupla2.getT1())
+			.agotado(tupla2.getT2())
+			.build());				
+		
 		
 	}
 	
