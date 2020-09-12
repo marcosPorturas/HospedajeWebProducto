@@ -22,7 +22,7 @@ public class Producto implements Serializable{
 	private Integer idProducto;
 	@Field("detalle")
 	private String detalle;
-	@Field("apellidos")
+	@Field("stock")
 	private Integer stock;
 	@Field("precio_unitario")
 	private Double precioUnitario;

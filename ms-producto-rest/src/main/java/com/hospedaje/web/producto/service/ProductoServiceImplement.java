@@ -64,13 +64,6 @@ public class ProductoServiceImplement implements ProductoService{
 	}
 	
 	@Override
-	public Flux<ProductoResponse> listarProductosXIds(int[] idProductos) {
-		List<Integer> lstIdProductos = Arrays.stream(idProductos).boxed().collect(Collectors.toList());
-		return productoRepository.findAllById(lstIdProductos)
-				.map(this::productoResponseDto);
-	}
-	
-	@Override
 	public Mono<ValidarStockResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest) {
 		
 		
@@ -133,5 +126,22 @@ public class ProductoServiceImplement implements ProductoService{
 				.precioUnitario(producto.getPrecioUnitario())
 				.subTotal(producto.getPrecioUnitario()*productoConsumoRequest.getCantidad())
 				.build();
+	}
+
+	@Override
+	public Flux<ProductoResponse> actualizarStockProductos(List<ProductoConsumoRequest> productoConsumoRequest) {
+		// TODO Auto-generated method stub
+		List<Integer> lstIdProductos = productoConsumoRequest.stream()
+				.map(request->request.getIdProducto())
+				.collect(Collectors.toList());
+		
+		return Flux.fromIterable(productoConsumoRequest)
+				.zipWith(productoRepository.findAllById(lstIdProductos))
+				.flatMap(tupla->{
+					tupla.getT2().setStock(tupla.getT2().getStock()-tupla.getT1().getCantidad());
+					return productoRepository.save(tupla.getT2());
+				})
+				.map(producto->productoResponseDto(producto));
+				
 	}
 }

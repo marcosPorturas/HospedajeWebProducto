@@ -58,4 +58,9 @@ public class ProductoController {
 	public Mono<ValidarStockResponse> validarStock(@RequestBody List<ProductoConsumoRequest> lstProductoConsumo){
 		return productoService.listarProductosAgotados(lstProductoConsumo);
 	}
+	
+	@PostMapping("/actualizar/stock")
+	public Flux<ProductoResponse> actualizarStock(@RequestBody List<ProductoConsumoRequest> lstProductoConsumo){
+		return productoService.actualizarStockProductos(lstProductoConsumo);
+	}
 }

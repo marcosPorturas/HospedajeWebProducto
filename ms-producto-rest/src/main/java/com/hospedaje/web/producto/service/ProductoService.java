@@ -15,9 +15,8 @@ import reactor.core.publisher.Mono;
 public interface ProductoService {
 
 	public Flux<ProductoResponse> listarProductos(HttpHeaders headers);
-	public Flux<ProductoResponse> listarProductosXIds(int[] idProductos);
 	public Mono<ProductoResponse> obtenerProducto(Integer idProducto,Integer cantidad);
 	public Mono<ProductoResponse> agregarProducto(ProductoRequest socioRequest,HttpHeaders headers);
 	public Mono<ValidarStockResponse> listarProductosAgotados(List<ProductoConsumoRequest> productoConsumoRequest);
-	
+	public Flux<ProductoResponse> actualizarStockProductos(List<ProductoConsumoRequest> productoConsumoRequest);
 }
